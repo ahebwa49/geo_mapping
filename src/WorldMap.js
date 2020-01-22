@@ -2,43 +2,44 @@ import React from "react";
 import * as d3 from "d3";
 
 const margin = 75;
-const width = 1920 - margin;
-const height = 1080 - margin;
+const width = 1200 - margin;
+const height = 650 - margin;
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
+class WorldMap extends React.Component {
   componentDidMount() {
-    function draw(geo_data) {
-      const svg = d3
-        .select(this.refs.chart)
-        .append("svg")
-        .attr("width", width + margin)
-        .attr("height", height + margin)
-        .append("g")
-        .attr("class", "map");
+    const { data } = this.props;
 
-      // debugger;
-      const projection = d3.geoMercator();
+    console.log(data);
 
-      const path = d3.geoPath().projection(projection);
+    const svg = d3
+      .select(this.refs.chart)
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .append("g")
+      .attr("class", "map");
 
-      // debugger;
+    const projection = d3
+      .geoMercator()
+      .scale(130)
+      .translate([width / 2, height / 1.4]);
 
-      const map = svg
-        .selectAll("path")
-        .data(geo_data.features)
-        .enter()
-        .append("path")
-        .attr("d", path);
-    }
+    const path = d3.geoPath().projection(projection);
 
-    // d3.json("world_countries.json", draw);
+    const map = svg
+      .selectAll("path")
+      .data(data.features)
+      .enter()
+      .append("path")
+      .attr("d", path)
+      .style("fill", "rgb(9, 157, 217)")
+      .style("stroke", "black")
+      .style("stroke-width", 0.5);
   }
+
   render() {
+    const { data } = this.props;
+
     const styles = {
       container: {
         display: "grid",
@@ -48,10 +49,14 @@ class App extends React.Component {
 
     return (
       <div ref="chart" style={styles.container}>
-        <h1 style={{ textAlign: "center" }}>Hi, I'm the geo chart :)</h1>
+        {data ? (
+          <p style={{ textAlign: "center" }}>Hi, I'm the geo chart :)</p>
+        ) : (
+          <p>loading ...</p>
+        )}
       </div>
     );
   }
 }
 
-export default App;
+export default WorldMap;
